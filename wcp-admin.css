@@ -1,0 +1,21 @@
+#wcp-tab-content {
+    margin-top: 20px;
+}
+.wcp-tab-pane {
+    padding: 10px;
+}
+.wcp-pricing-table {
+    width: 100%;
+}
+.wcp-product-select, .wcp-price-input {
+    vertical-align: middle;
+}
+.wcp-add-row td {
+    padding: 10px;
+}
+.nav-tab-wrapper {
+    margin-bottom: 20px;
+}
+.nav-tab {
+    cursor: pointer;
+}
