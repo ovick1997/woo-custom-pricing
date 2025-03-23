@@ -1,12 +1,22 @@
 <?php
-/*
+/**
  * Plugin Name: WooCommerce Custom Pricing
- * Description: Manage custom product prices with a customer list and details tab under WooCommerce, with persistent status indicators.
- * Version: 1.0
- * Author: Your Name
+ * Plugin URI: https://github.com/ovick1997/woo-custom-pricing
+ * Description: A WooCommerce extension to set custom product prices for individual customers with a user-friendly tabbed interface.
+ * Version: 1.0.0
+ * Author: Md Shorov Abedin
+ * Author URI: https://shorovabedin.com
+ * License: GPL-2.0+
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain: woo-custom-pricing
+ * Domain Path: /languages
+ * Requires at least: 5.0
+ * Requires PHP: 7.0
+ * Tested up to: 6.5
+ * WC requires at least: 3.0
+ * WC tested up to: 8.0
  */
- 
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
@@ -40,12 +50,12 @@ function wcp_enqueue_scripts( $hook ) {
     if ( 'woocommerce_page_wcp-custom-pricing' !== $hook ) {
         return;
     }
-    wp_enqueue_script( 'wcp-admin-script', plugin_dir_url( __FILE__ ) . 'wcp-admin.js', [ 'jquery' ], '1.0', true );
+    wp_enqueue_script( 'wcp-admin-script', plugin_dir_url( __FILE__ ) . 'wcp-admin.js', [ 'jquery' ], '1.0.0', true );
     wp_localize_script( 'wcp-admin-script', 'wcp_ajax', [
         'ajax_url' => admin_url( 'admin-ajax.php' ),
         'nonce'    => wp_create_nonce( 'wcp_ajax_nonce' ),
     ]);
-    wp_enqueue_style( 'wcp-admin-style', plugin_dir_url( __FILE__ ) . 'wcp-admin.css', [], '1.0' );
+    wp_enqueue_style( 'wcp-admin-style', plugin_dir_url( __FILE__ ) . 'wcp-admin.css', [], '1.0.0' );
 }
 
 // Render the admin page with tabs
@@ -129,7 +139,7 @@ function wcp_render_admin_page() {
                                     <td>
                                         <input type="number" step="0.01" class="wcp-price-input" name="price" value="<?php echo esc_attr( $entry['price'] ); ?>" placeholder="Custom Price" style="width: 100px;" />
                                     </td>
-                                    <td class="wcp-status" style="text-align: start;"><?php echo $status; ?></td>
+                                    <td class="wcp-status" style="text-align: center;"><?php echo $status; ?></td>
                                     <td>
                                         <button type="button" class="button wcp-save-row">Save</button>
                                         <button type="button" class="button wcp-delete-row">Delete</button>
