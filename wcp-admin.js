@@ -93,11 +93,46 @@ jQuery(document).ready(function($) {
         $('#customer-details-tab').attr('href', $(this).attr('href'));
     });
 
-    // Customer search functionality
+    // AJAX customer search
+    let searchTimeout;
     $('#wcp-customer-search').on('keyup', function() {
-        const value = $(this).val().toLowerCase();
-        $('#wcp-customer-table tbody tr').filter(function() {
-            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-        });
+        clearTimeout(searchTimeout);
+        const searchTerm = $(this).val();
+        searchTimeout = setTimeout(function() {
+            wcp_search_customers(searchTerm, 1); // Start on page 1
+        }, 300); // Debounce for 300ms
     });
+
+    // Handle pagination clicks
+    $(document).on('click', '.tablenav-pages a', function(e) {
+        e.preventDefault();
+        const href = $(this).attr('href');
+        const paged = href.match(/paged=(\d+)/) ? parseInt(href.match(/paged=(\d+)/)[1]) : 1;
+        const searchTerm = $('#wcp-customer-search').val();
+        wcp_search_customers(searchTerm, paged);
+    });
+
+    function wcp_search_customers(search, paged) {
+        $.ajax({
+            url: wcp_ajax.ajax_url,
+            method: 'POST',
+            data: {
+                action: 'wcp_search_customers',
+                nonce: wcp_ajax.nonce,
+                search: search,
+                paged: paged
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#wcp-customer-table tbody').html(response.data.table_content);
+                    $('.tablenav-pages').html(response.data.pagination + ' <span class="displaying-num">' + response.data.total_users + ' customers</span>');
+                } else {
+                    alert('Error searching customers.');
+                }
+            },
+            error: function() {
+                alert('AJAX error occurred.');
+            }
+        });
+    }
 });

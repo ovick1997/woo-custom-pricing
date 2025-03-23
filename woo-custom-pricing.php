@@ -64,7 +64,7 @@ function wcp_render_admin_page() {
     $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'customer-list';
     $selected_user_id = isset( $_GET['user_id'] ) ? absint( $_GET['user_id'] ) : 0;
     $paged = isset( $_GET['paged'] ) ? max( 1, absint( $_GET['paged'] ) ) : 1;
-    $per_page = 20;
+    $per_page = 15; // Changed to 15 customers per page
 
     // Customer query with pagination
     $args = [
@@ -120,8 +120,8 @@ function wcp_render_admin_page() {
                         echo paginate_links( [
                             'base'      => add_query_arg( 'paged', '%#%' ),
                             'format'    => '',
-                            'prev_text' => __( '&laquo; Previous' ),
-                            'next_text' => __( 'Next &raquo;' ),
+                            'prev_text' => __( '« Previous' ),
+                            'next_text' => __( 'Next »' ),
                             'total'     => $total_pages,
                             'current'   => $paged,
                         ] );
@@ -220,6 +220,57 @@ function wcp_save_price_ajax() {
 
     update_user_meta( $user_id, 'wcp_custom_prices', $custom_prices );
     wp_send_json_success( [ 'message' => 'Price updated successfully!' ] );
+}
+
+// AJAX handler for customer search
+add_action( 'wp_ajax_wcp_search_customers', 'wcp_search_customers_ajax' );
+function wcp_search_customers_ajax() {
+    check_ajax_referer( 'wcp_ajax_nonce', 'nonce' );
+    $search = isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '';
+    $paged = isset( $_POST['paged'] ) ? max( 1, absint( $_POST['paged'] ) ) : 1;
+    $per_page = 15;
+
+    $args = [
+        'role__in' => [ 'customer', 'subscriber' ],
+        'number'   => $per_page,
+        'offset'   => ( $paged - 1 ) * $per_page,
+        'search'   => '*' . esc_attr( $search ) . '*',
+        'search_columns' => [ 'user_login', 'user_email', 'display_name' ],
+    ];
+    $user_query = new WP_User_Query( $args );
+    $users = $user_query->get_results();
+    $total_users = $user_query->get_total();
+    $total_pages = ceil( $total_users / $per_page );
+
+    ob_start();
+    foreach ( $users as $user ) {
+        ?>
+        <tr>
+            <td><?php echo esc_html( $user->display_name ); ?></td>
+            <td><?php echo esc_html( $user->user_email ); ?></td>
+            <td>
+                <a href="<?php echo admin_url( 'admin.php?page=wcp-custom-pricing&tab=customer-details&user_id=' . $user->ID ); ?>" class="button">View Details</a>
+            </td>
+        </tr>
+        <?php
+    }
+    $table_content = ob_get_clean();
+
+    $pagination = paginate_links( [
+        'base'      => admin_url( 'admin.php?page=wcp-custom-pricing&tab=customer-list&paged=%#%' ),
+        'format'    => '',
+        'prev_text' => __( '« Previous' ),
+        'next_text' => __( 'Next »' ),
+        'total'     => $total_pages,
+        'current'   => $paged,
+        'type'      => 'plain',
+    ] );
+
+    wp_send_json_success( [
+        'table_content' => $table_content,
+        'pagination'    => $pagination,
+        'total_users'   => $total_users,
+    ] );
 }
 
 // Filter to modify product price
