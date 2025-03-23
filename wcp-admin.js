@@ -88,8 +88,16 @@ jQuery(document).ready(function($) {
         }
     });
 
-    // Update Customer Details tab link dynamically (optional, for smoother UX)
+    // Update Customer Details tab link dynamically
     $('.wcp-tab-pane#tab-customer-list a.button').on('click', function(e) {
         $('#customer-details-tab').attr('href', $(this).attr('href'));
+    });
+
+    // Customer search functionality
+    $('#wcp-customer-search').on('keyup', function() {
+        const value = $(this).val().toLowerCase();
+        $('#wcp-customer-table tbody tr').filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
     });
 });

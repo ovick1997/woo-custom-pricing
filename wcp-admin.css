@@ -26,3 +26,13 @@
 .wcp-status {
     width: 50px; /* Fixed width for status column */
 }
+#wcp-customer-search {
+    margin-bottom: 10px;
+}
+.tablenav-pages {
+    text-align: right;
+}
+.tablenav-pages a, .tablenav-pages span {
+    padding: 5px 10px;
+    margin: 0 2px;
+}

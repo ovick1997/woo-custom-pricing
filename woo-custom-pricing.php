@@ -61,9 +61,22 @@ function wcp_enqueue_scripts( $hook ) {
 // Render the admin page with tabs
 function wcp_render_admin_page() {
     $products = wc_get_products( [ 'limit' => -1, 'status' => 'publish' ] );
-    $users = get_users( [ 'role__in' => [ 'customer', 'subscriber' ] ] );
     $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'customer-list';
     $selected_user_id = isset( $_GET['user_id'] ) ? absint( $_GET['user_id'] ) : 0;
+    $paged = isset( $_GET['paged'] ) ? max( 1, absint( $_GET['paged'] ) ) : 1;
+    $per_page = 20;
+
+    // Customer query with pagination
+    $args = [
+        'role__in' => [ 'customer', 'subscriber' ],
+        'number'   => $per_page,
+        'offset'   => ( $paged - 1 ) * $per_page,
+    ];
+    $user_query = new WP_User_Query( $args );
+    $users = $user_query->get_results();
+    $total_users = $user_query->get_total();
+    $total_pages = ceil( $total_users / $per_page );
+
     ?>
     <div class="wrap">
         <h1>Custom Pricing Manager</h1>
@@ -74,7 +87,10 @@ function wcp_render_admin_page() {
         <div id="wcp-tab-content">
             <!-- Customer List Tab -->
             <div class="wcp-tab-pane" id="tab-customer-list" style="display: <?php echo $active_tab === 'customer-list' ? 'block' : 'none'; ?>;">
-                <table class="wp-list-table widefat fixed striped">
+                <div style="margin-bottom: 20px;">
+                    <input type="text" id="wcp-customer-search" placeholder="Search customers..." style="width: 300px; padding: 5px;">
+                </div>
+                <table class="wp-list-table widefat fixed striped" id="wcp-customer-table">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -98,6 +114,21 @@ function wcp_render_admin_page() {
                         ?>
                     </tbody>
                 </table>
+                <div class="tablenav bottom" style="margin-top: 20px;">
+                    <div class="tablenav-pages">
+                        <?php
+                        echo paginate_links( [
+                            'base'      => add_query_arg( 'paged', '%#%' ),
+                            'format'    => '',
+                            'prev_text' => __( '&laquo; Previous' ),
+                            'next_text' => __( 'Next &raquo;' ),
+                            'total'     => $total_pages,
+                            'current'   => $paged,
+                        ] );
+                        ?>
+                        <span class="displaying-num"><?php echo esc_html( $total_users ); ?> customers</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Customer Details Tab -->
