@@ -19,3 +19,10 @@
 .nav-tab {
     cursor: pointer;
 }
+.wcp-checkmark {
+    color: #46b450; /* Green checkmark */
+    font-size: 20px;
+}
+.wcp-status {
+    width: 50px; /* Fixed width for status column */
+}

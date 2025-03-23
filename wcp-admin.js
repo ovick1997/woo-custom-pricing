@@ -14,6 +14,7 @@ jQuery(document).ready(function($) {
                 <td>
                     <input type="number" step="0.01" class="wcp-price-input" name="price" placeholder="Custom Price" style="width: 100px;" />
                 </td>
+                <td class="wcp-status" style="text-align: center;"></td>
                 <td>
                     <button type="button" class="button wcp-save-row">Save</button>
                     <button type="button" class="button wcp-delete-row">Delete</button>
@@ -29,6 +30,7 @@ jQuery(document).ready(function($) {
         const index = row.data('index');
         const productId = row.find('.wcp-product-select').val();
         const price = row.find('.wcp-price-input').val();
+        const statusCell = row.find('.wcp-status');
 
         $.ajax({
             url: wcp_ajax.ajax_url,
@@ -43,7 +45,11 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success) {
-                    alert(response.data.message);
+                    if (productId && price) {
+                        statusCell.html('<span class="wcp-checkmark">✔</span>');
+                    } else {
+                        statusCell.html('');
+                    }
                 } else {
                     alert('Error saving price.');
                 }

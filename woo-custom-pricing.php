@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: WooCommerce Custom Pricing
- * Description: Manage custom product prices with a customer list and details tab under WooCommerce.
+ * Description: Manage custom product prices with a customer list and details tab under WooCommerce, with persistent status indicators.
  * Version: 1.0
  * Author: Your Name
  * Text Domain: woo-custom-pricing
@@ -105,12 +105,14 @@ function wcp_render_admin_page() {
                             <tr>
                                 <th>Product</th>
                                 <th>Custom Price</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
                             foreach ( $custom_prices as $index => $entry ) {
+                                $status = ( ! empty( $entry['product_id'] ) && ! empty( $entry['price'] ) ) ? '<span class="wcp-checkmark">✔</span>' : '';
                                 ?>
                                 <tr data-user-id="<?php echo esc_attr( $selected_user_id ); ?>" data-index="<?php echo $index; ?>">
                                     <td>
@@ -127,6 +129,7 @@ function wcp_render_admin_page() {
                                     <td>
                                         <input type="number" step="0.01" class="wcp-price-input" name="price" value="<?php echo esc_attr( $entry['price'] ); ?>" placeholder="Custom Price" style="width: 100px;" />
                                     </td>
+                                    <td class="wcp-status" style="text-align: start;"><?php echo $status; ?></td>
                                     <td>
                                         <button type="button" class="button wcp-save-row">Save</button>
                                         <button type="button" class="button wcp-delete-row">Delete</button>
@@ -136,7 +139,7 @@ function wcp_render_admin_page() {
                             }
                             ?>
                             <tr class="wcp-add-row">
-                                <td colspan="3">
+                                <td colspan="4">
                                     <button type="button" class="button wcp-add-price">Add New Price</button>
                                 </td>
                             </tr>
