@@ -1,0 +1,42 @@
+#wcp-tab-content {
+    margin-top: 20px;
+}
+.wcp-tab-pane {
+    padding: 10px;
+}
+.wcp-pricing-table, .wcp-rule-pricing-table {
+    width: 100%;
+}
+.wcp-product-select, .wcp-price-input {
+    vertical-align: middle;
+}
+.wcp-add-row td, .wcp-add-rule-row td {
+    padding: 10px;
+}
+.nav-tab-wrapper {
+    margin-bottom: 20px;
+}
+.nav-tab {
+    cursor: pointer;
+}
+.wcp-checkmark {
+    color: #46b450;
+    font-size: 20px;
+}
+.wcp-status {
+    width: 50px;
+    text-align: center;
+}
+#wcp-customer-search, #wcp-rule-name {
+    margin-bottom: 10px;
+}
+.tablenav-pages {
+    text-align: right;
+}
+.tablenav-pages a, .tablenav-pages span {
+    padding: 5px 10px;
+    margin: 0 2px;
+}
+#wcp-bulk-customers {
+    margin-top: 10px;
+}
