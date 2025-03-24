@@ -14,7 +14,7 @@ jQuery(document).ready(function($) {
                 <td>
                     <input type="number" step="0.01" class="wcp-price-input" name="price" placeholder="Custom Price" style="width: 100px;" />
                 </td>
-                <td class="wcp-status" style="text-align: center;"></td>
+                <td class="wcp-status" style="text-align: start;"></td>
                 <td>
                     <button type="button" class="button wcp-save-row">Save</button>
                     <button type="button" class="button wcp-delete-row">Delete</button>
@@ -88,8 +88,51 @@ jQuery(document).ready(function($) {
         }
     });
 
-    // Update Customer Details tab link dynamically (optional, for smoother UX)
+    // Update Customer Details tab link dynamically
     $('.wcp-tab-pane#tab-customer-list a.button').on('click', function(e) {
         $('#customer-details-tab').attr('href', $(this).attr('href'));
     });
+
+    // AJAX customer search
+    let searchTimeout;
+    $('#wcp-customer-search').on('keyup', function() {
+        clearTimeout(searchTimeout);
+        const searchTerm = $(this).val();
+        searchTimeout = setTimeout(function() {
+            wcp_search_customers(searchTerm, 1); // Start on page 1
+        }, 300); // Debounce for 300ms
+    });
+
+    // Handle pagination clicks
+    $(document).on('click', '.tablenav-pages a', function(e) {
+        e.preventDefault();
+        const href = $(this).attr('href');
+        const paged = href.match(/paged=(\d+)/) ? parseInt(href.match(/paged=(\d+)/)[1]) : 1;
+        const searchTerm = $('#wcp-customer-search').val();
+        wcp_search_customers(searchTerm, paged);
+    });
+
+    function wcp_search_customers(search, paged) {
+        $.ajax({
+            url: wcp_ajax.ajax_url,
+            method: 'POST',
+            data: {
+                action: 'wcp_search_customers',
+                nonce: wcp_ajax.nonce,
+                search: search,
+                paged: paged
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#wcp-customer-table tbody').html(response.data.table_content);
+                    $('.tablenav-pages').html(response.data.pagination + ' <span class="displaying-num">' + response.data.total_users + ' customers</span>');
+                } else {
+                    alert('Error searching customers.');
+                }
+            },
+            error: function() {
+                alert('AJAX error occurred.');
+            }
+        });
+    }
 });
