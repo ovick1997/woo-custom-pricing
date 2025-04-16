@@ -1,5 +1,5 @@
 === WooCommerce Custom Pricing ===
-Contributors: shorovabedin
+Contributors: Shorov
 Tags: woocommerce, custom pricing, customer pricing, ecommerce, price management
 Requires at least: 5.0
 Tested up to: 6.5
